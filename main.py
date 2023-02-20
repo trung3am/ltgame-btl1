@@ -1,14 +1,20 @@
 import pygame
 import time
 import random
-
-
+import os
+print(os.path.abspath(os.getcwd()))
+path = os.path.abspath(os.getcwd())
 pygame.init()
 X= 800
 Y= 600
 DEFAULT_WALL_SIZE = (800,600)
 DEFAULT_ZOMBIE_SIZE = (80,150)
 ZOMBIE_WIDTH_OFFSET = 40
+pygame.mixer.music.load(path + "\\bgmusic.mp3")
+pygame.mixer.music.set_volume(.3)
+pygame.mixer.music.play(-1)
+ding = pygame.mixer.Sound(path+"\\ding.mp3")
+ding.set_volume(.5)
 INIT = "init"
 HIT = 'hit'
 WITHDRAW = 'withdraw'
@@ -19,11 +25,11 @@ green = (0, 255, 0)
 blue = (0, 0, 128)
 pygame.display.set_caption('Whack Zombie')
 font = pygame.font.Font('freesansbold.ttf', 32)
-wall = pygame.image.load('D:\\ltgame\\btl1\\wall2.png')
+wall = pygame.image.load(path+'\\wall2.png')
 wall = pygame.transform.scale(wall, DEFAULT_WALL_SIZE)
-zombie_img = pygame.image.load('D:\\ltgame\\btl1\\zb.png')
-zombie_nohead_img = pygame.image.load('D:\\ltgame\\btl1\\zb-nohead.png')
-zombie_hit_img = pygame.image.load('D:\\ltgame\\btl1\\zb-hit.png')
+zombie_img = pygame.image.load(path+'\\zb.png')
+zombie_nohead_img = pygame.image.load(path+'\\zb-nohead.png')
+zombie_hit_img = pygame.image.load(path+'\\zb-hit.png')
 zombie_img = pygame.transform.scale(zombie_img,DEFAULT_ZOMBIE_SIZE)
 zombie_nohead_img = pygame.transform.scale(zombie_nohead_img,DEFAULT_ZOMBIE_SIZE)
 zombie_hit_img = pygame.transform.scale(zombie_hit_img,DEFAULT_ZOMBIE_SIZE)
@@ -31,6 +37,7 @@ zombie_offset = (40,150)
 zombies = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
 zombies_create_interval = [0]
 score = [0]
+miss = [0]
 class Zombie:
   def __init__(self, duration, pos) -> None:
     self.createdAt = time.time()
@@ -110,7 +117,7 @@ def proceedZombies():
             y.height = 0
             removeZombie(y.pos)
           else: 
-            y.height = y.height - int(t*15)
+            y.height = y.height - int(t*8)
             if y.height < 0: y.height = 0
       if y.state == HIT and time.time() - y.hitTimeStamp > 0.5:
         y.state = HITWITHDRAW
@@ -119,9 +126,9 @@ def proceedZombies():
 
 # 75-150 ~ 700 500 0-8 0 6
 def paintWall():
-  text = font.render("score: "+str(score[0]), True, green, blue)
+  text = font.render("hit/miss: "+str(score[0]) + '/' + str(miss[0]), True, green, blue)
   screen.blit(wall, (0,0))
-  screen.blit(text,(650,535))
+  screen.blit(text,(600,535))
 def paintZombie(zombie:Zombie):
   print(zombie.pos)
   print((zombie.pos[0]*150-ZOMBIE_WIDTH_OFFSET,zombie.pos[1]*150-zombie.height))
@@ -154,7 +161,9 @@ def hitCheck(pos):
           y.state = HIT
           y.hitTimeStamp = time.time()
           score[0] += 1
+          ding.play()
           return True
+  miss[0] +=1
   return False
 
 

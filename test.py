@@ -1,3 +1,2 @@
-import time
-
-print(int(time.time()))
+import os
+print(os.path.abspath(os.getcwd()))
