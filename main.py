@@ -11,10 +11,10 @@ DEFAULT_WALL_SIZE = (X,Y)
 DEFAULT_ZOMBIE_SIZE = (80,150)
 ZOMBIE_WIDTH_OFFSET = 40
 pygame.mixer.music.load(path + "\\bgmusic.mp3")
-pygame.mixer.music.set_volume(.3)
+pygame.mixer.music.set_volume(.9)
 pygame.mixer.music.play(-1)
 ding = pygame.mixer.Sound(path+"\\ding.mp3")
-ding.set_volume(.5)
+ding.set_volume(.9)
 INIT = "init"
 HIT = 'hit'
 WITHDRAW = 'withdraw'
@@ -48,6 +48,7 @@ grave_zombies = [0,1,2,3,4,5,6,7,8]
 zombies_create_interval = [0]
 score = [0]
 miss = [0]
+rate = [0]
 class Zombie:
   def __init__(self, duration, pos) -> None:
     self.createdAt = time.time()
@@ -199,7 +200,9 @@ def proceedGraveZombie():
 
 # 75-150 ~ 700 500 0-8 0 6
 def paintWall():
-  text = font.render("hit/miss: "+str(score[0]) + '/' + str(miss[0]), True, green, blue)
+  if miss[0] == 0: rate[0] = 100
+  else: rate[0] = score[0] / miss[0]
+  text = font.render("hit/miss: "+str(score[0]) + '/' + str(miss[0])  + "  " + str(rate[0]), True, green, blue)
   screen.blit(wall, (0,0))
   screen.blit(text,(10,10))
 def paintZombie(zombie:Zombie):
@@ -256,7 +259,7 @@ def hitCheck(pos):
         ding.play()
         return True
   
-  # miss[0] +=1
+  miss[0] +=1
   return False
 
 
