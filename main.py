@@ -7,7 +7,7 @@ path = os.path.abspath(os.getcwd())
 pygame.init()
 X= 800
 Y= 600
-DEFAULT_WALL_SIZE = (800,600)
+DEFAULT_WALL_SIZE = (X,Y)
 DEFAULT_ZOMBIE_SIZE = (80,150)
 ZOMBIE_WIDTH_OFFSET = 40
 pygame.mixer.music.load(path + "\\bgmusic.mp3")
@@ -31,6 +31,14 @@ wall = pygame.transform.scale(wall, DEFAULT_WALL_SIZE)
 zombie_img = pygame.image.load(path+'\\zb.png')
 zombie_nohead_img = pygame.image.load(path+'\\zb-nohead.png')
 zombie_hit_img = pygame.image.load(path+'\\zb-hit.png')
+
+cursor_basic = pygame.image.load("cursor-basic.png")
+cursor_basic = pygame.transform.scale(cursor_basic, (90,90))
+cursor_hit = pygame.image.load("cursor-hit.png")
+cursor_hit = pygame.transform.scale(cursor_hit,(90,90))
+cursor = cursor_basic
+press_time=time.time()
+
 zombie_img = pygame.transform.scale(zombie_img,DEFAULT_ZOMBIE_SIZE)
 zombie_nohead_img = pygame.transform.scale(zombie_nohead_img,DEFAULT_ZOMBIE_SIZE)
 zombie_hit_img = pygame.transform.scale(zombie_hit_img,DEFAULT_ZOMBIE_SIZE)
@@ -193,7 +201,7 @@ def proceedGraveZombie():
 def paintWall():
   text = font.render("hit/miss: "+str(score[0]) + '/' + str(miss[0]), True, green, blue)
   screen.blit(wall, (0,0))
-  screen.blit(text,(575,535))
+  screen.blit(text,(10,10))
 def paintZombie(zombie:Zombie):
   # print(zombie.pos)
   # print((zombie.pos[0]*150-ZOMBIE_WIDTH_OFFSET,zombie.pos[1]*150-zombie.height))
@@ -208,8 +216,14 @@ def paintZombie(zombie:Zombie):
   if type(zombie.pos) == int: screen.blit(z,(GRAVE_SPOT[zombie.pos][0]-ZOMBIE_WIDTH_OFFSET,GRAVE_SPOT[zombie.pos][1]-zombie.height))
 
 def refresh():
+  pygame.mouse.set_visible(False)
+  x,y = pygame.mouse.get_pos()
+  if cursor==cursor_basic:
+    screen.blit(cursor, (x-18,y-28))
+  else:
+    screen.blit(cursor, (x-30,y-50))
   pygame.display.flip()
-
+  
 def updateScreen():
   paintWall()
   for x in zombies:
@@ -259,7 +273,11 @@ while(running):
     if i.type == pygame.MOUSEBUTTONDOWN:
       pos = pygame.mouse.get_pos()
       hitCheck(pos)
+      cursor = cursor_hit
+      press_time=time.time()
       print(pos)
     if i.type == pygame.QUIT:
       running = False
+  if time.time()-press_time > .2:
+    cursor = cursor_basic
 pygame.quit()
