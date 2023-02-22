@@ -201,8 +201,8 @@ def proceedGraveZombie():
 # 75-150 ~ 700 500 0-8 0 6
 def paintWall():
   if miss[0] == 0: rate[0] = 100
-  else: rate[0] = score[0] / miss[0]
-  text = font.render("hit/miss: "+str(score[0]) + '/' + str(miss[0])  + "  " + str(rate[0]), True, green, blue)
+  else: rate[0] = score[0]*100 / (miss[0] + score[0])
+  text = font.render("hit/miss: "+str(score[0]) + '/' + str(miss[0])  + " rate: " + str(int(rate[0]))+ "%", True, green, blue)
   screen.blit(wall, (0,0))
   screen.blit(text,(10,10))
 def paintZombie(zombie:Zombie):
